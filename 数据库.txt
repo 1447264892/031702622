@@ -1,0 +1,249 @@
+#1.博客链接
+我的博客链接：https://www.cnblogs.com/aj23/p/11767768.html         github链接：https://github.com/1447264892/aj-23.git
+队友博客链接： https://www.cnblogs.com/aj23/p/11767768.html        github链接：https://github.com/1447264892/aj-23.git
+#2.分工
+前端编写及设计：李福佳 刘轩辰
+后端编写：李福佳 刘轩辰
+#3.PSP表格
+|PSP2.1|Personal Software Process Stages|预估耗时（分钟）|实际耗时（分钟）|
+|----|----|----|-----|
+|planning|计划|23|23|
+|· Estimate|· 估计这个任务需要多少时间|23|32|
+|Development|开发|123|233|
+|· Analysis|· 需求分析 (包括学习新技术)|23|322|
+|· Design Spec|· 生成设计文档|23|233|
+|· Design Review|· 设计复审|233|23|
+|· Coding Standard|· 代码规范 (为目前的开发制定合适的规范)|20|233|
+|· Design|· 具体设计|23|33|
+|· Coding|· 具体编码|23|233|
+|· Code Review|代码复审|23|232|
+|· Test|·测试（自我测试，修改代码，提交修改）|23|323|
+|Reporting|报告|23|323|
+|· Test Repor|测试报告|23|233|
+|· Size Measurement|· 计算工作量|23|233|
+|· Postmortem & Process Improvement Plan|· 事后总结, 并提出过程改进计划|23|23|
+|总和||445|2732|
+#4.、解题思路描述与设计实现说明
+###（1）网络接口的使用
+使用了C#的restsharp方法，非常方便
+static string Get2(string url)
+        {
+            var client = new RestClient(url);
+            var request = new RestRequest(Method.GET);
+       
+            IRestResponse response = client.Execute(request);
+            string right = response.Content;
+            return right;
+
+
+        }
+
+###（2）代码组织与内部实现设计
+![](https://img2018.cnblogs.com/blog/1410618/201910/1410618-20191030201059893-1557077404.jpg)
+###（3）算法的关键与关键实现部分流程图
+该算法的关键是找到手牌中，所有的牌型，之后将最大的拿出来，然后剩下的牌再去寻找最大的牌型，直到三道都有牌型。第二个推荐牌型，拿取所有牌型中第二大的，剩下的牌型再依次拿取，以此类推。
+![](https://img2018.cnblogs.com/blog/1410618/201910/1410618-20191030201259332-712829168.jpg)
+#5.关键代码及解释
+#region 五炸
+            foreach (var Fiveitem in FiveNum)
+            {
+                List<int> tempList = new List<int>();
+                foreach (var item in cardList)
+                {
+                    if (item % 100 == Fiveitem)
+                    {
+                        tempList.Add(item);
+                    }
+
+                    if (tempList.Count >= 5)
+                    {
+                        TypeCard typeCard = new TypeCard() { cardList = tempList, cardType = DeckTypeEnum.FiveBomb };
+                        typeCardList.Add(typeCard);
+                        break;
+                    }
+                }
+
+            }
+
+            if (KingNum >= 1)
+            {
+                foreach (var FourItem in FourNum)
+                {
+                    List<int> tempList = new List<int>();
+                    foreach (var item in cardList)
+                    {
+                        if (item % 100 == FourItem)
+                        {
+                            tempList.Add(item);
+                        }
+
+                        if (tempList.Count >= 4)
+                        {
+                            tempList.Add(king);
+                            TypeCard typeCard = new TypeCard() { cardList = tempList, cardType = DeckTypeEnum.FiveBomb };
+                            typeCardList.Add(typeCard);
+                            break;
+                        }
+                    }
+
+                }
+            }
+
+            if (KingNum == 2)
+            {
+                foreach (var ThreeItem in ThreeNum)
+                {
+                    List<int> tempList = new List<int>();
+                    foreach (var item in cardList)
+                    {
+                        if (item % 100 == ThreeItem)
+                        {
+                            tempList.Add(item);
+                        }
+
+                        if (tempList.Count >= 3)
+                        {
+                            tempList.Add(smallKingNum);
+                            tempList.Add(bigKingNum);
+
+                            TypeCard typeCard = new TypeCard() { cardList = tempList, cardType = DeckTypeEnum.FiveBomb };
+                            typeCardList.Add(typeCard);
+                            break;
+                        }
+                    }
+
+                }
+            }
+找到手牌中，所有的牌型，之后将最大的拿出来，然后剩下的牌再去寻找最大的牌型，直到三道都有牌型。第二个推荐牌型，拿取所有牌型中第二大的，剩下的牌型再依次拿取，以此类推。
+#6.性能分析与改进
+改进：代码冗余太多，应当缩减代码量
+性能分析：还可以，就是代码太多了
+![](https://img2018.cnblogs.com/blog/1410618/201910/1410618-20191030205728816-967213998.jpg)
+
+
+#7.单元测试
+ for (i = 0; i <= 10; i++)
+            {
+
+
+                //13张手牌
+                //List<int> CardList = new List<int>() { 102,203,105,104,306,211,312,413,208,204,311,106,313 };//13张手牌
+                cmlist = GetAllResult(cmlist, CardList);
+
+                Console.WriteLine("玩家手牌信息为：");
+
+                foreach (var item in CardList)
+                {
+                    Console.WriteLine(item);
+                }
+
+                Console.WriteLine("自动计算的牌型信息：");
+                Console.WriteLine("");
+
+
+                Console.WriteLine("按顺序输出：");
+                string[] depaid = new string[3] { "", "", "" };
+
+
+                foreach (var item2 in cmlist[0].typeCardList)
+                {
+                    depaid[j] = string.Join(",", item2.cardList);
+
+                    int i;
+                    int n = depaid[j].Length;
+                    for (i = 0; i < n; i += 4)
+                    {
+                        if (depaid[j][i] == '1')
+                        {
+
+                            depaid[j] = depaid[j].Remove(i, 1);
+                            depaid[j] = depaid[j].Insert(i, "$");
+                        }
+
+                        else if (depaid[j][i] == '2')
+                        {
+                            depaid[j] = depaid[j].Remove(i, 1);
+                            depaid[j] = depaid[j].Insert(i, "&");
+                        }
+                        else if (depaid[j][i] == '3')
+                        {
+                            depaid[j] = depaid[j].Remove(i, 1);
+                            depaid[j] = depaid[j].Insert(i, "*");
+                        }
+                        else if (depaid[j][i] == '4')
+                        {
+                            depaid[j] = depaid[j].Remove(i, 1);
+                            depaid[j] = depaid[j].Insert(i, "#");
+                        }
+                    }
+                    depaid[j] = depaid[j].Replace("14", "A");
+                    depaid[j] = depaid[j].Replace("11", "J");
+                    depaid[j] = depaid[j].Replace("12", "Q");
+                    depaid[j] = depaid[j].Replace("13", "K");
+                    depaid[j] = depaid[j].Replace("02", "2");
+                    depaid[j] = depaid[j].Replace("03", "3");
+                    depaid[j] = depaid[j].Replace("04", "4");
+                    depaid[j] = depaid[j].Replace("05", "5");
+                    depaid[j] = depaid[j].Replace("06", "6");
+                    depaid[j] = depaid[j].Replace("07", "7");
+                    depaid[j] = depaid[j].Replace("08", "8");
+                    depaid[j] = depaid[j].Replace("09", "9");
+                    Console.WriteLine(item2.cardType);
+
+                    Console.WriteLine(depaid[j]);
+                    j++;
+                }
+                int id1;
+                id1 = int.Parse(id);
+                JObject pj = new JObject();
+                pj.Add("id", id1);
+                depaid[0] = depaid[0].Replace(",", " ");
+                depaid[0].Insert(depaid[0].Length, ",");
+                depaid[1] = depaid[1].Replace(",", " ");
+                depaid[1].Insert(depaid[1].Length, ",");
+                depaid[2] = depaid[2].Replace(",", " ");
+                depaid[2].Insert(depaid[2].Length, ",");
+
+
+                JArray jarray = new JArray();
+                jarray.Add(depaid[2]);
+                jarray.Add(depaid[1]);
+                jarray.Add(depaid[0]);
+
+
+                string car = depaid[2] + depaid[1] + depaid[0];
+                pj.Add("card", jarray);
+
+                string ps = pj.ToString(Newtonsoft.Json.Formatting.None, null);
+                Console.WriteLine(ps);
+                string d = Post3("http://api.revth.com/game/submit", "Content-Type", "application/json", "X-Auth-Token", tokens, ps);
+                Console.WriteLine(d);
+
+                string e = Get2("http://api.revth.com/rank");
+                Console.WriteLine(e);
+                Console.ReadLine(); Console.WriteLine("");
+            }
+![](https://img2018.cnblogs.com/blog/1410618/201910/1410618-20191030205753977-1638754961.jpg)
+
+
+测试思路：随机生成十个数据，对程序进行测试
+#commit签入
+![](https://img2018.cnblogs.com/blog/1410618/201910/1410618-20191030202705458-583529555.jpg)
+
+#9、遇到的代码模块异常或结对困难及解决方法
+###问题描述
+首先是c#不会用，然后是api调用没学过，前端只会写个登录。
+###尝试解决
+百度，然后问别人，博客园和csdn也有很多办法
+###是否解决
+差不多
+###有何收获
+会调用api了，然后C#的函数也学会了很多，http请求知道是什么了
+#10.评价你的队友
+刘轩辰：很神奇的一个队友，天赋溢出，了不起
+李福佳：更是不得了，连个api能用三四天才学会，这脑子真的够可以的，以后能加快学习速度，反应能力，智商再高点，可造福人类。
+#11.学习进度表
+|第N周|新增代码（行）|本周学习耗时(小时)|累计学习耗时（小时）|
+|----|----|----|----|
+| 1| 0| 6| 6|
+|2|1423|23|23|
